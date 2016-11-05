@@ -17,8 +17,8 @@ Project for Data Science trying to infer household income based on household cha
 * CH13 = finishedYear
 * CH14 = lastYear
 * ESTADO = activity
-* CAT_OCUP = unempCond
-* CAT_INAC = empCond
+* CAT_OCUP = empCond
+* CAT_INAC = unempCond
 * ITF = ITF
 * IPCF = IPCF
 * P47T = P47T
