@@ -12,7 +12,6 @@ Project for Data Science trying to infer household income based on household cha
 * CH03 = familyRelation
 * CH04 = female
 * CH06 = age
-* CH10 = schooled
 * CH12 = schoolYear
 * CH13 = finishedYear
 * CH14 = lastYear
