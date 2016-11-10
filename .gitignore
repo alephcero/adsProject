@@ -90,3 +90,6 @@ ENV/
 
 #data
 /data
+
+#un jupyter notebook para testear cosas y que no se suba al repo
+test.ipynb
