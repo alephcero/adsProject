@@ -73,7 +73,8 @@ def getEPHdbf(censusstring):
                         'unempCond',
                         'ITF',
                         'IPCF',
-                  'P47T']
+                  'P47T',
+			'P21']
     indNoW.index =range(0,indNoW.shape[0])
 
     indNoW.to_csv('data/cleanData' + trimestre + '.csv', index = False)
