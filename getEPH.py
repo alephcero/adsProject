@@ -53,7 +53,7 @@ def getEPHdbf(censusstring):
                         'CAT_INAC',
                         'ITF',
                         'IPCF',
-                        'P47T']]
+                        'P47T','P21']]
 
     indNoW.columns = ['CODUSU',
                         'NRO_HOGAR',
