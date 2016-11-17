@@ -253,3 +253,25 @@ def make_dummy(data):
     data['female_25to34'] = ((data.female == 1) & ((data.age >= 25 ) & ( data.age <= 34))).astype(int)
     data['female_35more'] = ((data.female == 1) & ((data.age >= 35 ))).astype(int)    
     return data
+
+def runModel(dataset, income = 'lnIncome',
+              variables = [
+        'primary','secondary','university',
+        'male_14to24','male_25to34',
+        'female_14to24', 'female_25to34', 'female_35more']):
+    
+    '''
+    This function takes a data set, runs a model according to specifications,
+    and returns the model, printing the summary
+    '''
+    selectedVariables = ['PONDERA',income] + variables
+    data = dataset.loc[:,selectedVariables]
+    y = data.copy().iloc[:,1].values
+    X = data.copy().iloc[:,2:].values
+    w = data.copy().iloc[:,0].values
+    lm = sm.WLS(y, X2, weights=1. / w, hasconst=False).fit()
+    print lm.summary()
+    for i in range(1,len(variables)+1):
+        print 'x%d: %s' % (i,variables[i-1])
+    return lm
+
