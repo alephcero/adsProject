@@ -3,6 +3,7 @@ import numpy as np
 import os
 import sys
 import simpledbf
+import statsmodels.api as sm
 
 
 
@@ -265,13 +266,12 @@ def runModel(dataset, income = 'lnIncome',
     and returns the model, printing the summary
     '''
     selectedVariables = ['PONDERA',income] + variables
-    data = dataset.loc[:,selectedVariables]
-    y = data.copy().iloc[:,1].values
-    X = data.copy().iloc[:,2:].values
-    w = data.copy().iloc[:,0].values
-    lm = sm.WLS(y, X2, weights=1. / w, hasconst=False).fit()
+    dataToRun = dataset.loc[:,selectedVariables]
+    y = dataToRun.copy().iloc[:,1].values
+    X = sm.add_constant(dataToRun.copy().iloc[:,2:].values)
+    w = dataToRun.copy().iloc[:,0].values
+    lm = sm.WLS(y, X, weights=1. / w, hasconst=False).fit()
     print lm.summary()
     for i in range(1,len(variables)+1):
         print 'x%d: %s' % (i,variables[i-1])
     return lm
-
