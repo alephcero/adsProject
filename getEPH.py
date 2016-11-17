@@ -255,6 +255,27 @@ def make_dummy(data):
     data['female_35more'] = ((data.female == 1) & ((data.age >= 35 ))).astype(int)    
     return data
 
+def prepareDataForModel(dataset):
+    #select variables and people with jobs and income for that job
+    jobsAndIncome = ((dataset.activity==1) & (dataset.P21>1))
+    dataModel = dataset.copy().loc[jobsAndIncome,
+                              ['PONDERA','P47T','P21',
+                               'primary','secondary','university',
+                               'male_14to24','male_25to34',
+                               'female_14to24', 'female_25to34', 'female_35more',
+                               'female','age']]
+    
+    dataModel['education'] = dataModel.primary + dataModel.secondary + dataModel.university
+    dataModel['education2'] = dataModel['education'] ** 2
+    dataModel['age2'] = dataModel['age'] ** 2
+    dataModel.P47T.replace(to_replace=[0], value=[1] , inplace=True, axis=None)
+    dataModel.P21.replace(to_replace=[0], value=[1] , inplace=True, axis=None)
+    dataModel['lnIncome']= np.log(dataModel.P21)
+    dataModel['lnIncomeT']= np.log(dataModel.P47T)
+    dataModel.dropna(inplace=True)
+    return dataModel
+    
+
 def runModel(dataset, income = 'lnIncome',
               variables = [
         'primary','secondary','university',
@@ -275,3 +296,5 @@ def runModel(dataset, income = 'lnIncome',
     for i in range(1,len(variables)+1):
         print 'x%d: %s' % (i,variables[i-1])
     return lm
+
+
