@@ -282,7 +282,7 @@ def runModel(dataset, income = 'lnIncome',
               variables = [
         'primary','secondary','university',
         'male_14to24','male_25to34',
-        'female_14to24', 'female_25to34', 'female_35more'],constant = False):
+        'female_14to24', 'female_25to34', 'female_35more']):
     
     '''
     This function takes a data set, runs a model according to specifications,
@@ -293,7 +293,7 @@ def runModel(dataset, income = 'lnIncome',
     y = dataToRun.copy().iloc[:,1].values
     X = sm.add_constant(dataToRun.copy().iloc[:,2:].values)
     w = dataToRun.copy().iloc[:,0].values
-    lm = sm.WLS(y, X, weights=1. / w, hasconst=constant).fit()
+    lm = sm.WLS(y, X, weights=1. / w).fit()
     print lm.summary()
     for i in range(1,len(variables)+1):
         print 'x%d: %s' % (i,variables[i-1])
