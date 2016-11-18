@@ -297,6 +297,19 @@ def runModel(dataset, income = 'lnIncome',
     print lm.summary()
     for i in range(1,len(variables)+1):
         print 'x%d: %s' % (i,variables[i-1])
+    #testing within sample
+    R_IS=[]
+    R_OS=[]
+    nCross=1000
+    
+    for i in range(nCross):
+        X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(X, y, w, test_size=0.33)
+        lm = sm.WLS(y_train, X_train, weights=1. / w_train, hasconst=False).fit()        
+        R_IS.append(1-((np.asarray(lm.predict(exog = X_train))-y_train)**2).sum()/((y_train-np.mean(y_train))**2).sum())                                                                     
+        R_OS.append(1-((np.asarray(lm.predict(exog = X_test))-y_test)**2).sum()/((y_test-np.mean(y_test))**2).sum())
+    print("IS R-squared for {} times is {}".format(nCross,np.mean(R_IS)))
+    print("OS R-squared for {} times is {}".format(nCross,np.mean(R_OS)))
+
     return lm
 
 
