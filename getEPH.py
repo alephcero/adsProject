@@ -3,11 +3,6 @@ import numpy as np
 import os
 import sys
 import simpledbf
-import statsmodels.api as sm
-from sklearn.linear_model import LinearRegression
-from sklearn.cross_validation import train_test_split
-
-
 
 
 def getEPHdbf(censusstring):
@@ -58,7 +53,7 @@ def getEPHdbf(censusstring):
                         'CAT_INAC',
                         'ITF',
                         'IPCF',
-                        'P47T','P21']]
+                        'P47T']]
 
     indNoW.columns = ['CODUSU',
                         'NRO_HOGAR',
@@ -78,238 +73,107 @@ def getEPHdbf(censusstring):
                         'unempCond',
                         'ITF',
                         'IPCF',
-                  'P47T',
-			'P21']
+                  'P47T']
     indNoW.index =range(0,indNoW.shape[0])
+
+    dbf2 = simpledbf.Dbf5('data/Hogar_' + trimestre + '.dbf',codec='latin1')
+    indRaw2 = dbf2.to_dataframe()
+
+    indNoW2 = indRaw2.loc[indRaw2.REGION == 1,['CODUSU',
+                                                'NRO_HOGAR',
+                                                'REGION',
+                                                'PONDERA',
+                                                'IV1',
+                                                'IV1_ESP',
+                                                'IV2',
+                                                'IV3',
+                                                'IV3_ESP',
+                                                'IV4',
+                                                'IV5',
+                                                'IV6',
+                                                'IV7',
+                                                'IV7_ESP',
+                                                'IV8',
+                                                'IV9',
+                                                'IV10',
+                                                'IV11',
+                                                'IV12_1',
+                                                'IV12_2',
+                                                'IV12_3',
+                                                'II1',
+                                                'II2',
+                                                'II3',
+                                                'II3_1',
+                                                'II4_1',
+                                                'II4_2',
+                                                'II4_3',
+                                                'II7',
+                                                'II7_ESP',
+                                                'II8',
+                                                'II8_ESP',
+                                                'II9',
+                                                'V1',
+                                                'IX_TOT',
+                                                'IX_MEN10',
+                                                'IX_MAYEQ10',
+                                                'ITF',
+                                                'VII1_1',
+                                                'VII1_2',
+                                                'VII2_1',
+                                                'VII2_2',
+                                                'VII2_3',
+                                                'VII2_4']]
+
+    indNoW2.columns = [['CODUSU',
+                        'NRO_HOGAR',
+                        'REGION',
+                        'PONDERA',
+                        'HomeType',
+                        'HomeTypeesp',
+                        'RoomsNumber',
+                        'FloorMaterial',
+                        'FloorMaterialesp',
+                        'RoofMaterial',
+                        'RoofCoat',
+                        'Water',
+                        'WaterType',
+                        'WaterTypeesp',
+                        'Toilet',
+                        'ToiletLocation',
+                        'ToiletType',
+                        'Sewer',
+                        'DumpSites',
+                        'Flooding',
+                        'EmergencyLoc',
+                        'UsableTotalRooms',
+                        'SleepingRooms',
+                        'OfficeRooms',
+                        'OnlyWork',
+                        'Kitchen',
+                        'Sink',
+                        'Garage',
+                        'Ownership',
+                        'Ownershipesp',
+                        'CookingCombustible',
+                        'CookingCombustibleesp',
+                        'BathroomUse',
+                        'Working',
+                        'HouseMembers',
+                        'Memberless10',
+                        'Membermore10',
+                        'TotalHouseHoldIncome',
+                        'DomesticService1',
+                        'DomesticService2',
+                        'DomesticService3',
+                        'DomesticService4',
+                        'DomesticService5',
+                        'DomesticService6']]
+
+    indNoW2.index = range(0, indNoW2.shape[0])
+
+    indNoW2.to_csv('data/cleanDataHousehold' + trimestre + '.csv', index=False)
+    print 'csv file cleanDataHousehold', trimestre, '.csv successfully created in folder data/'
 
     indNoW.to_csv('data/cleanData' + trimestre + '.csv', index = False)
     print 'csv file cleanData',trimestre,'.csv successfully created in folder data/'
     return
-
-
-
-def schoolYears(dataset):
-    '''
-    This function takes a dataset with
-    schoolLevel: last level of school attended
-    finishedYear: if the person finished that level
-    lastYear: last year of that level aproved
-    and returns a new dataset with the amount of school years for each level
-    '''
-    primary = []
-    secondary = []
-    university = []
-    
-    for i in range(dataset.shape[0]):
-        
-        #kinder, special or no school
-        if ((dataset['schoolLevel'][i] > 8) | (dataset['schoolLevel'][i] < 2)):
-            primary_i = 0
-            secondary_i = 0
-            university_i = 0
-        
-        #from primary to university
-        else:
-            #finished their level
-            if dataset['finishedYear'][i] == 1:
-                
-                #finish primary
-                if ((dataset['schoolLevel'][i] == 2) | (dataset['schoolLevel'][i] == 3)):
-                    primary_i = 7
-                    secondary_i = 0
-                    university_i = 0
-                
-                #finish seconday
-                elif ((dataset['schoolLevel'][i] == 4) | (dataset['schoolLevel'][i] == 5)):
-                    primary_i = 7
-                    secondary_i = 5
-                    university_i = 0
-                
-                #finish college
-                elif dataset['schoolLevel'][i] == 6:
-                    primary_i = 7
-                    secondary_i = 5
-                    university_i = 3
-                    
-                #finish university
-                elif ((dataset['schoolLevel'][i] == 7) | (dataset['schoolLevel'][i] == 8)):
-                    primary_i = 7
-                    secondary_i = 5
-                    university_i = 5
-            # didn't finish
-            elif dataset['finishedYear'][i] == 2:
-                
-                #not finish primary
-                if dataset['schoolLevel'][i] == 2:
-                    if dataset['lastYear'][i] > 90:
-                        primary_i = 0
-                    elif dataset['lastYear'][i] > 6:
-                        primary_i = 6
-                    else:
-                        primary_i = dataset['lastYear'][i]
-                    secondary_i = 0
-                    
-                    university_i = 0
-                
-                #not finish EGB
-                elif dataset['schoolLevel'][i] == 3:
-                    if dataset['lastYear'][i] > 90:
-                        primary_i = 0
-                        secondary_i = 0
-                    elif dataset['lastYear'][i] > 7:
-                        primary_i = 7
-                        secondary_i = dataset['lastYear'][i] - 7
-                    else:
-                        primary_i = dataset['lastYear'][i]
-                        secondary_i = 0
-                        
-                    university_i = 0
-
-                    
-                #not finish Secondary
-                elif dataset['schoolLevel'][i] == 4:
-                    if dataset['lastYear'][i] > 90:
-                        secondary_i = 0
-                    elif dataset['lastYear'][i] > 5:
-                        secondary_i = 5
-                    else:
-                        secondary_i = dataset['lastYear'][i]
-                                            
-                    primary_i = 7
-                    university_i = 0
-                
-                #not finish polimodal
-                elif dataset['schoolLevel'][i] == 5:
-                    if dataset['lastYear'][i] > 90:
-                        secondary_i = 0
-                    elif dataset['lastYear'][i] > 2:
-                        secondary_i = 4
-                    else:
-                        secondary_i = dataset['lastYear'][i]
-                    
-                    primary_i = 7    
-                    university_i = 0
-               
-                
-                #not finish college
-                elif dataset['schoolLevel'][i] == 6:
-                    if dataset['lastYear'][i] > 90:
-                        university_i = 2
-                    elif dataset['lastYear'][i] > 3:
-                        university_i = 3
-                    else:
-                        university_i = dataset['lastYear'][i]
-                        
-                    primary_i = 7
-                    secondary_i = 5
-                    
-                    
-                #no finish university
-                elif ((dataset['schoolLevel'][i] == 7) | (dataset['schoolLevel'][i] == 8)):
-                    if dataset['lastYear'][i] > 90:
-                        university_i = 3
-                    elif dataset['lastYear'][i] > 5:
-                        university_i = 5
-                    else:
-                        university_i = dataset['lastYear'][i]
-                        
-                    primary_i = 7
-                    secondary_i = 5
-
-                #last year proved
-                
-                
-            #don't know
-            else:
-                primary_i = 0
-                secondary_i = 0
-                university_i = 0
-            
-        
-        #add values to list
-        primary.append(primary_i)
-        secondary.append(secondary_i)
-        university.append(university_i)
-    
-    dataset['primary'] = primary
-    dataset['secondary'] = secondary
-    dataset['university'] = university
-    
-    return dataset
-
-
-def categorize(df):
-    df.female = (df.female == 2).astype(int)
-    df.schoolLevel.replace(to_replace=[99], value=[np.nan] , inplace=True, axis=None) 
-    df.lastYear.replace(to_replace=[98,99], value=[np.nan, np.nan] , inplace=True, axis=None)
-    df.activity.replace(to_replace=[0], value=[np.nan] , inplace=True, axis=None)
-    df.empCond.replace(to_replace=[0], value=[np.nan] , inplace=True, axis=None)
-    df.unempCond.replace(to_replace=[0], value=[np.nan] , inplace=True, axis=None)
-    return df
-
-
-
-def make_dummy(data):
-    data['male_14to24'] = ((data.female == 0) & ((data.age >= 14) & (data.age <= 24))).astype(int) 
-    data['male_25to34'] = ((data.female == 0) & ((data.age >= 25 ) & ( data.age <= 34))).astype(int)
-    data['female_14to24'] = ((data.female == 1) & ((data.age >= 14 ) & ( data.age <= 24))).astype(int)
-    data['female_25to34'] = ((data.female == 1) & ((data.age >= 25 ) & ( data.age <= 34))).astype(int)
-    data['female_35more'] = ((data.female == 1) & ((data.age >= 35 ))).astype(int)    
-    return data
-
-def prepareDataForModel(dataset):
-    #select variables and people with jobs and income for that job
-    jobsAndIncome = ((dataset.activity==1) & (dataset.P21>1))
-    dataModel = dataset.copy().loc[jobsAndIncome,
-                              ['PONDERA','P47T','P21',
-                               'primary','secondary','university',
-                               'male_14to24','male_25to34',
-                               'female_14to24', 'female_25to34', 'female_35more',
-                               'female','age']]
-    
-    dataModel['education'] = dataModel.primary + dataModel.secondary + dataModel.university
-    dataModel['education2'] = dataModel['education'] ** 2
-    dataModel['age2'] = dataModel['age'] ** 2
-    dataModel.P47T.replace(to_replace=[0], value=[1] , inplace=True, axis=None)
-    dataModel.P21.replace(to_replace=[0], value=[1] , inplace=True, axis=None)
-    dataModel['lnIncome']= np.log(dataModel.P21)
-    dataModel['lnIncomeT']= np.log(dataModel.P47T)
-    dataModel.dropna(inplace=True)
-    return dataModel
-    
-
-def runModel(dataset, income = 'lnIncome',
-              variables = [
-        'primary','secondary','university',
-        'male_14to24','male_25to34',
-        'female_14to24', 'female_25to34', 'female_35more']):
-    
-    '''
-    This function takes a data set, runs a model according to specifications,
-    and returns the model, printing the summary
-    '''
-    selectedVariables = ['PONDERA',income] + variables
-    dataToRun = dataset.loc[:,selectedVariables]
-    y = dataToRun.copy().iloc[:,1].values
-    X = sm.add_constant(dataToRun.copy().iloc[:,2:].values)
-    w = dataToRun.copy().iloc[:,0].values
-    lm = sm.WLS(y, X, weights=1. / w).fit()
-    print lm.summary()
-    for i in range(1,len(variables)+1):
-        print 'x%d: %s' % (i,variables[i-1])
-    #testing within sample
-    R_IS=[]
-    R_OS=[]
-    nCross=1000
-    
-    for i in range(nCross):
-        X_train, X_test, y_train, y_test, w_train, w_test = train_test_split(X, y, w, test_size=0.33)
-        lm = sm.WLS(y_train, X_train, weights=1. / w_train, hasconst=False).fit()        
-        R_IS.append(1-((np.asarray(lm.predict(exog = X_train))-y_train)**2).sum()/((y_train-np.mean(y_train))**2).sum())                                                                     
-        R_OS.append(1-((np.asarray(lm.predict(exog = X_test))-y_test)**2).sum()/((y_test-np.mean(y_test))**2).sum())
-    print("IS R-squared for {} times is {}".format(nCross,np.mean(R_IS)))
-    print("OS R-squared for {} times is {}".format(nCross,np.mean(R_OS)))
-
-    return lm
-
-
