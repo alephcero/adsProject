@@ -53,7 +53,8 @@ def getEPHdbf(censusstring):
                         'CAT_INAC',
                         'ITF',
                         'IPCF',
-                        'P47T']]
+                        'P47T',
+                        'P21']]
 
     indNoW.columns = ['CODUSU',
                         'NRO_HOGAR',
@@ -73,7 +74,8 @@ def getEPHdbf(censusstring):
                         'unempCond',
                         'ITF',
                         'IPCF',
-                  'P47T']
+                  'P47T',
+                  'P21']
     indNoW.index =range(0,indNoW.shape[0])
 
     dbf2 = simpledbf.Dbf5('data/Hogar_' + trimestre + '.dbf',codec='latin1')
