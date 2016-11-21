@@ -62,6 +62,8 @@ def schoolYears(dataset):
                         primary_i = 0
                     elif dataset['lastYear'][i] > 6:
                         primary_i = 6
+                    elif pd.isnull(dataset['lastYear'][i]):
+                    	primary_i = 3
                     else:
                         primary_i = dataset['lastYear'][i]
                     secondary_i = 0
@@ -73,6 +75,9 @@ def schoolYears(dataset):
                     if dataset['lastYear'][i] > 90:
                         primary_i = 0
                         secondary_i = 0
+                    elif pd.isnull(dataset['lastYear'][i]):
+                    	primary_i = 3
+                    	secondary_i = 0
                     elif dataset['lastYear'][i] > 7:
                         primary_i = 7
                         secondary_i = dataset['lastYear'][i] - 7
@@ -87,6 +92,8 @@ def schoolYears(dataset):
                 elif dataset['schoolLevel'][i] == 4:
                     if dataset['lastYear'][i] > 90:
                         secondary_i = 0
+                    elif pd.isnull(dataset['lastYear'][i]):
+                    	secondary_i = 2
                     elif dataset['lastYear'][i] > 5:
                         secondary_i = 5
                     else:
@@ -99,6 +106,8 @@ def schoolYears(dataset):
                 elif dataset['schoolLevel'][i] == 5:
                     if dataset['lastYear'][i] > 90:
                         secondary_i = 0
+                    elif pd.isnull(dataset['lastYear'][i]):
+                    	secondary_i = 1
                     elif dataset['lastYear'][i] > 2:
                         secondary_i = 4
                     else:
@@ -112,6 +121,8 @@ def schoolYears(dataset):
                 elif dataset['schoolLevel'][i] == 6:
                     if dataset['lastYear'][i] > 90:
                         university_i = 2
+                    elif pd.isnull(dataset['lastYear'][i]):
+                    	university_i = 1
                     elif dataset['lastYear'][i] > 3:
                         university_i = 3
                     else:
@@ -125,6 +136,8 @@ def schoolYears(dataset):
                 elif ((dataset['schoolLevel'][i] == 7) | (dataset['schoolLevel'][i] == 8)):
                     if dataset['lastYear'][i] > 90:
                         university_i = 3
+                    elif pd.isnull(dataset['lastYear'][i]):
+                    	university_i = 2
                     elif dataset['lastYear'][i] > 5:
                         university_i = 5
                     elif math.isnan(dataset['lastYear'][i]):
