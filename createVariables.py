@@ -1,3 +1,7 @@
+import numpy as np
+import pandas as pd 
+
+
 def createVariables(dataset):
 	dataset.drop_duplicates(inplace=True)
 	dataset['education'] = dataset.primary + dataset.secondary + dataset.university
@@ -9,4 +13,5 @@ def createVariables(dataset):
 	dataset.P21.replace(to_replace=[0], value=[1] , inplace=True, axis=None)
 	dataset['lnIncome']= np.log(dataset.P21)
 	dataset['lnIncomeT']= np.log(dataset.P47T)
+	return dataset
 
