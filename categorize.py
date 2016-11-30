@@ -8,5 +8,6 @@ def categorize(df):
     df.activity.replace(to_replace=[0], value=[np.nan] , inplace=True, axis=None)
     df.empCond.replace(to_replace=[0], value=[np.nan] , inplace=True, axis=None)
     df.unempCond.replace(to_replace=[0], value=[np.nan] , inplace=True, axis=None)
+    df.reading = (df.reading == 1).astype(int)
     return df
 
