@@ -56,6 +56,7 @@ def getEPHdbf(censusstring):
                         'P47T',
                         'P21',
                         'DECCFR',
+                        'DECIFR',
                         'CH07',
                         'CH09',
                         'CH15']]
@@ -81,6 +82,7 @@ def getEPHdbf(censusstring):
                   'P47T',
                   'P21',
                   'DECCFR',
+                  'DECIFR',
                   'maritalStatus',
                   'reading',
                   'placeOfBirth']
@@ -133,7 +135,13 @@ def getEPHdbf(censusstring):
                                                 'VII2_1',
                                                 'VII2_2',
                                                 'VII2_3',
-                                                'VII2_4']]
+                                                'VII2_4',
+                                                'ITF',
+                                                'DECIFR',
+                                                'RDECIFR',
+                                                'IPCF',
+                                                'DECCFR',
+                                                'RDECCFR']]
 
     indNoW2.columns = [['CODUSU',
                         'NRO_HOGAR',
@@ -178,7 +186,13 @@ def getEPHdbf(censusstring):
                         'DomesticService3',
                         'DomesticService4',
                         'DomesticService5',
-                        'DomesticService6']]
+                        'DomesticService6',
+						'TotalFamilyIncome',
+                        'TotalFamilyIncomeDec',
+                        'TotalFamilyIncomeDecReg',
+                        'PerCapInc',
+                        'PerCapIncDec',
+                        'PerCapIncDecReg']]
 
     indNoW2.index = range(0, indNoW2.shape[0])
 
