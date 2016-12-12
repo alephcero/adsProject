@@ -1,0 +1,180 @@
+RUNDEF PROGRAMA
+//SELECTION INLINE, DPTO 02001
+SELECTION INLINE, PROV 02
+UNIVERSE VIVIENDA.V01 < 7 AND  VIVIENDA.V02 = 1  
+
+
+  DEFINE PERSONA.ESCO
+  AS SWITCH
+
+  *Nunca asistio
+  INCASE PERSONA.P08 = 3
+  ASSIGN 0
+  
+  *Jardin o especial
+  INCASE PERSONA.P09 = 1 OR PERSONA.P09 = 9
+  ASSIGN 0
+
+  *Primaria completo
+  INCASE PERSONA.P09 = 2 AND PERSONA.P10 = 1 
+  ASSIGN 7
+
+  *Primaria incompleto
+  INCASE PERSONA.P09 = 2 AND PERSONA.P10 = 2 
+  ASSIGN 0 + PERSONA.P11A
+  
+  *EGB Completo
+  INCASE PERSONA.P09 = 3 AND PERSONA.P10 = 1 
+  ASSIGN 9
+
+  *EGB incompleto
+  INCASE PERSONA.P09 = 3 AND PERSONA.P10 = 2 
+  ASSIGN 0 + PERSONA.P11A
+
+  *Secundario completo
+  INCASE PERSONA.P09 = 4 AND PERSONA.P10 = 1 
+  ASSIGN 12
+
+  *Secundario incompleto
+  INCASE PERSONA.P09 = 4 AND PERSONA.P10 = 2 
+  ASSIGN 7 + PERSONA.P11A
+
+  *Polimodal completo
+  INCASE PERSONA.P09 = 5 AND PERSONA.P10 = 1 
+  ASSIGN 12
+
+  *Polimodal incompleto
+  INCASE PERSONA.P09 = 5 AND PERSONA.P10 = 2 
+  ASSIGN 9 + PERSONA.P11A
+
+  *Superior no univ completo
+  INCASE PERSONA.P09 = 6 AND PERSONA.P10 = 1 
+  ASSIGN 15
+
+  *Superior no univ incompleto
+  INCASE PERSONA.P09 = 6 AND PERSONA.P10 = 2 
+  ASSIGN 12 + PERSONA.P11A
+
+  *Universitario completo
+  INCASE PERSONA.P09 = 7 AND PERSONA.P10 = 1 
+  ASSIGN 17
+
+  *Universitario incompleto
+  INCASE PERSONA.P09 = 7 AND PERSONA.P10 = 2 
+  ASSIGN 12 + PERSONA.P11A
+  
+  *Post Universitario
+  INCASE PERSONA.P09 = 8  
+  ASSIGN 17
+
+  TYPE INTEGER
+  VARLABEL "Años escolaridad"
+  RANGE 0-17
+  //SAVE "E:\adsProject\escolaridad.rbf"
+  //     OVERWRITE
+
+  OPTIONS
+  DEFAULT 0
+
+//----------------------------------------------------------------------------------
+
+
+DEFINE PERSONA.headEduc
+AS PERSONA.ESCO
+LIKE PERSONA.ESCO
+FOR PERSONA.P01 = 1
+
+
+
+//----------------------------------------------------------------------------------
+
+DEFINE HOGAR.headEduc
+AS PERSONA.ESCO
+LIKE PERSONA.ESCO
+VARLABEL "Escolaridad del jefe Hogar"
+RANGE 0-17
+
+DEFINE HOGAR.jobSchool
+AS SUM PERSONA.ESCO
+FOR PERSONA.CONDACT = 1 
+VARLABEL "jobAndSchool"
+RANGE 0-100
+
+DEFINE PERSONA.CANT
+  AS SWITCH
+  INCASE PERSONA.P02 > 0
+  ASSIGN 1
+
+
+DEFINE HOGAR.JOB
+AS SUM PERSONA.CANT
+FOR PERSONA.CONDACT = 1 
+//----------------------------------------------------------------------------------
+
+
+DEFINE HOGAR.COMBPOS
+    AS RECODE HOGAR.H14
+    (1 - 1=3)
+    (4 - 4=9)
+    (2 - 4=2)
+    (5 - 7=1)
+
+    TYPE INTEGER
+    RANGE 1-9
+    VARLABEL "Combustible usado para cocinar"
+    VALUELABELS
+    1 "Otros"
+    2 "Gas a tubo, garrafa, granel"
+    3 "Gas de red"
+        MISSING 9
+
+
+DEFINE HOGAR.WATER
+    AS RECODE HOGAR.H08
+    (1 - 1=1)
+    (2 - 3=0)
+    (4 - 4=2)
+    TYPE INTEGER
+    RANGE 0-4
+    VARLABEL "Tiene agua por caneria"
+    VALUELABELS
+    1 "Caneria dentro de la vivienda"
+    0 "No"
+        MISSING 2
+
+
+//----------------------------------------------------------------------------------
+
+  DEFINE HOGAR.HAC
+  AS HOGAR.TOTPERS / HOGAR.H15
+
+DEFINE HOGAR.HACB
+  AS SWITCH
+  INCASE HOGAR.HAC > 3
+  ASSIGN 1
+  ELSE 0
+
+
+//----------------------------------------------------------------------------------
+
+
+DEFINE HOGAR.PREDICT
+   //AS 1082 + HOGAR.headEduc * 352
+  //AS HOGAR.headEduc * 292  + HOGAR.JOB * 2573  - 1315
+  //AS HOGAR.headEduc * 309  + HOGAR.JOB * 2293 + HOGAR.H15 * 748  - 1315  //EDUC HEAD, JOB Y TOTAL SLEEPING ROOMS
+
+  //AS HOGAR.headEduc * 286  + HOGAR.JOB * 2576 - HOGAR.HACB * 2648.1970  - 1208
+  
+AS HOGAR.headEduc * 282  + HOGAR.JOB * 2681 - HOGAR.HAC * 450.1970  - 623  
+
+   //AS 1891 + HOGAR.jobSchool * 220
+   //AS 1286 + HOGAR.jobSchool * 209 + HOGAR.H15 * 501
+//----------------------------------------------------------------------------------
+
+
+TABLE Adepto3
+    AS AVERAGE 
+    OF HOGAR.PREDICT
+        ZERO
+    //AREABREAK RADIO
+    AREABREAK DPTO
