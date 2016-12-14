@@ -31,6 +31,7 @@ Understanding demographics is a crucial part of the policy making process, but b
 - schoolYears.py
 
 redatamScript = REDATAM Script
+Buenos Aires Real Estate Map (web scraping): https://github.com/nicolasmetallo/data_projects/tree/projects-branch/Buenos_Aires_Real_estate_Map
 
 ## REFERENCES
 - How to access Latin America census data (Spanish): https://observatoriocensal.org/2016/06/17/modos-de-acceso-a-los-datos-censales-en-los-paises-de-america-latina/
